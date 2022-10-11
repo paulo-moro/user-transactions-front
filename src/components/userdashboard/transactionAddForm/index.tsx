@@ -4,12 +4,12 @@ import { FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Api from "../../../api";
 import { useAuth } from "../../../providers/authtoken";
-import { useContacts } from "../../../providers/contacts";
+import { useTransactions } from "../../../providers/transactions";
 import { StyledButton } from "../../../styles/Button/style";
 import { StyledInput } from "../../../styles/Input/styles";
 
-function ContactAddForm() {
-  const { addContacts } = useContacts();
+function TransactionAddForm() {
+  const { addTransactions } = useTransactions();
   const { auth } = useAuth();
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -41,7 +41,7 @@ function ContactAddForm() {
     resolver: yupResolver(schema),
   });
 
-  const addContact = ({ email, name, phone }: FieldValues) => {
+  const addTransaction = ({ email, name, phone }: FieldValues) => {
     const errorsIsEmpty = () => {
       for (let key in errors) {
         if (errors.hasOwnProperty(key)) {
@@ -55,14 +55,14 @@ function ContactAddForm() {
 
     if (errorsIsEmpty()) {
       Api.post(
-        "/contact",
+        "/transaction",
         { email, name, phone },
         {
           headers: { Authorization: `Bearer ${auth}` },
         }
       )
         .then((res) => {
-          addContacts(res.data);
+          addTransactions(res.data);
           setName("");
           setPhone("");
           setEmail("");
@@ -73,7 +73,7 @@ function ContactAddForm() {
 
   return (
     <>
-      <form onSubmit={handleSubmit(addContact)}>
+      <form onSubmit={handleSubmit(addTransaction)}>
         <StyledInput
           type="text"
           placeholder="Complete name"
@@ -103,4 +103,4 @@ function ContactAddForm() {
   );
 }
 
-export default ContactAddForm;
+export default TransactionAddForm;

@@ -2,8 +2,8 @@ import { useModal } from "../../../providers/modal";
 import { useModalType } from "../../../providers/modalType";
 import { StyledButton } from "../../../styles/Button/style";
 
-import ContactAddForm from "../contactAddForm";
-import ContactEditForm from "../contactEditAddForm";
+import TransactionAddForm from "../transactionAddForm";
+import TransactionEditForm from "../transactionEditAddForm";
 import { StyledModal } from "./style";
 
 function DashboardModal() {
@@ -19,7 +19,7 @@ function DashboardModal() {
           </section>
           <section className="modal_second_section">
             <h2>Contact</h2>
-            <ContactAddForm />
+            <TransactionAddForm />
           </section>
         </StyledModal>
       ) : (
@@ -31,7 +31,7 @@ function DashboardModal() {
             </section>
             <section className="modal_second_section">
               <h2>Contact</h2>
-              <ContactEditForm />
+              <TransactionEditForm />
             </section>
           </StyledModal>
         )

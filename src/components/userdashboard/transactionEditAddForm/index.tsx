@@ -2,25 +2,25 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
-import { useContacts } from "../../../providers/contacts";
-import { useEditContact } from "../../../providers/editcontact";
+import { useTransactions } from "../../../providers/transactions";
+import { useEditTransaction } from "../../../providers/edittransaction";
 import { useModal } from "../../../providers/modal";
 import { useModalType } from "../../../providers/modalType";
 import { StyledButton } from "../../../styles/Button/style";
 
-function ContactEditForm() {
-  const { updateContacts, deleteContacts } = useContacts();
+function TransactionEditForm() {
+  const { updateTransactions, deleteTransactions } = useTransactions();
   const { changeModal } = useModal();
-  const { contact } = useEditContact();
+  const { transaction } = useEditTransaction();
   const { changeModalType } = useModalType();
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
 
   useEffect(() => {
-    setName(contact.name);
-    setPhone(contact.phone);
-    setEmail(contact.email);
+    setName(transaction.name);
+    setPhone(transaction.phone);
+    setEmail(transaction.email);
   }, []);
 
   const schema = yup.object().shape({
@@ -43,7 +43,7 @@ function ContactEditForm() {
     resolver: yupResolver(schema),
   });
 
-  const updateContact = (newData: FieldValues) => {
+  const updateTransaction = (newData: FieldValues) => {
     const errorsIsEmpty = () => {
       for (let key in errors) {
         if (errors.hasOwnProperty(key)) {
@@ -56,19 +56,19 @@ function ContactEditForm() {
     };
 
     if (errorsIsEmpty()) {
-      updateContacts(contact!.id, newData);
+      updateTransactions(transaction!.id, newData);
       changeModalType("");
       changeModal();
     }
   };
 
-  const deleteContact = (contactId: string) => {
-    deleteContacts(contactId);
+  const deleteTransaction = (transactionId: string) => {
+    deleteTransactions(transactionId);
     changeModalType("");
   };
 
   return (
-    <form onSubmit={handleSubmit(updateContact)}>
+    <form onSubmit={handleSubmit(updateTransaction)}>
       <input
         type="text"
         placeholder="Complete name"
@@ -93,7 +93,10 @@ function ContactEditForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <StyledButton type="button" onClick={() => deleteContact(contact!.id)}>
+      <StyledButton
+        type="button"
+        onClick={() => deleteTransaction(transaction!.id)}
+      >
         Delete
       </StyledButton>
       <StyledButton type="submit">Save</StyledButton>
@@ -101,4 +104,4 @@ function ContactEditForm() {
   );
 }
 
-export default ContactEditForm;
+export default TransactionEditForm;

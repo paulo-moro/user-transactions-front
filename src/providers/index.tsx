@@ -1,8 +1,8 @@
 import { Ichildrentype } from "../interface";
 import { AuthProvider } from "./authtoken";
-import { ContactTypeProvider } from "./contactForm";
-import { ContactsProvider } from "./contacts";
-import { EditContactProvider } from "./editcontact";
+import { TransactionTypeProvider } from "./transactionForm";
+import { TransactionsProvider } from "./transactions";
+import { EditTransactionProvider } from "./edittransaction";
 import { ModalProvider } from "./modal";
 import { ModalTypeProvider } from "./modalType";
 import { UserProvider } from "./user";
@@ -11,15 +11,15 @@ const Providers = ({ children }: Ichildrentype) => {
   return (
     <AuthProvider>
       <UserProvider>
-        <ContactsProvider>
-          <ContactTypeProvider>
-            <EditContactProvider>
+        <TransactionsProvider>
+          <TransactionTypeProvider>
+            <EditTransactionProvider>
               <ModalTypeProvider>
                 <ModalProvider>{children}</ModalProvider>
               </ModalTypeProvider>
-            </EditContactProvider>
-          </ContactTypeProvider>
-        </ContactsProvider>
+            </EditTransactionProvider>
+          </TransactionTypeProvider>
+        </TransactionsProvider>
       </UserProvider>
     </AuthProvider>
   );

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import ContactList from "../../components/userdashboard/contactsList";
+import ContactList from "../../components/userdashboard/transactionList";
 import DashboardModal from "../../components/userdashboard/dashboardModal";
 import { useAuth } from "../../providers/authtoken";
-import { useContacts } from "../../providers/contacts";
+import { useContacts } from "../../providers/transactions";
 import { useUser } from "../../providers/user";
 import { StyledDashBoard } from "./styles";
 

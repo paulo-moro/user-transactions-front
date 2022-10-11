@@ -4,7 +4,7 @@ export interface Ichildrentype {
   children: ReactNode;
 }
 
-export interface IcontactType {
+export interface ItransactionType {
   id: string;
   name: string;
   phone: string;
