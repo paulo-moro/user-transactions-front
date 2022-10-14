@@ -1,4 +1,4 @@
-# Aplicação de contatos de usuário.
+# Neo Transactions.
 
 Aplicação front end para a api de cadastro de usuários e transações.
 repo da api:
