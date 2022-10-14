@@ -16,7 +16,7 @@ function HomePage() {
   return (
     <StyledHomePage>
       <section className="first_section">
-        <h2>User Contacts</h2>
+        <h2>Neo Transactions</h2>
       </section>
       <section className="second_section">
         <LoginForm />
