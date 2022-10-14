@@ -1,27 +1,20 @@
 import { createContext, useState, useContext } from "react";
 import Api from "../../api";
-import { Ichildrentype } from "../../interface";
+import {
+  Ichildrentype,
+  ITransaction,
+  ItransactionParcial,
+} from "../../interface";
 import { useAuth } from "../authtoken";
 
-interface Transaction {
-  id: string;
-  name: string;
-  phone: string;
-  email: string;
-}
-
-interface TransactionPartial {
-  name?: string;
-  phone?: string;
-  email?: string;
-}
-
 interface TransactionsProviderData {
-  transactions: Transaction[];
-  addTransactions: (transaction: Transaction) => void;
+  transactions: ITransaction[];
+  transaction: ITransaction;
+  addTransactions: (transaction: ITransaction) => void;
   getTransactions: () => void;
-  updateTransactions: (id: string, newData: TransactionPartial) => void;
-  deleteTransactions: (id: string) => void;
+  updateTransactions: (id: number, newData: ItransactionParcial) => void;
+  deleteTransactions: (id: number) => void;
+  changeTransaction: (newTransaction: ITransaction) => void;
 }
 
 export const TransactionsContext = createContext<TransactionsProviderData>(
@@ -29,9 +22,17 @@ export const TransactionsContext = createContext<TransactionsProviderData>(
 );
 
 export const TransactionsProvider = ({ children }: Ichildrentype) => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
+  const [transaction, setTransaction] = useState<ITransaction>(
+    {} as ITransaction
+  );
   const { auth } = useAuth();
-  const addTransactions = (transaction: Transaction) =>
+
+  const changeTransaction = (newTransaction: ITransaction) => {
+    setTransaction({ ...transaction, ...newTransaction });
+  };
+
+  const addTransactions = (transaction: ITransaction) =>
     setTransactions([transaction, ...transactions]);
 
   const getTransactions = () => {
@@ -42,7 +43,7 @@ export const TransactionsProvider = ({ children }: Ichildrentype) => {
       .catch((err) => console.log(err));
   };
 
-  const updateTransactions = (id: string, newData: TransactionPartial) => {
+  const updateTransactions = (id: number, newData: ItransactionParcial) => {
     Api.patch(`transaction/${id}`, newData, {
       headers: { Authorization: `Bearer ${auth}` },
     }).then((res) => {
@@ -50,7 +51,7 @@ export const TransactionsProvider = ({ children }: Ichildrentype) => {
     });
   };
 
-  const deleteTransactions = (id: string) => {
+  const deleteTransactions = (id: number) => {
     Api.delete(`transaction/${id}`, {
       headers: { Authorization: `Bearer ${auth}` },
     }).then((res) => {
@@ -62,10 +63,12 @@ export const TransactionsProvider = ({ children }: Ichildrentype) => {
     <TransactionsContext.Provider
       value={{
         transactions,
+        transaction,
         addTransactions,
         updateTransactions,
         deleteTransactions,
         getTransactions,
+        changeTransaction,
       }}
     >
       {children}

@@ -13,7 +13,8 @@ export default createGlobalStyle`
     --brown1: #9e906e;
     --purple1: #9684a3;
     --purple2:#8870ff;
-	--white:#FFFFFF
+	--white:#FFFFFF;
+	--red:#D30000
 }
 
 body{

@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Api from "../../../api";
@@ -7,31 +7,28 @@ import { useAuth } from "../../../providers/authtoken";
 import { useTransactions } from "../../../providers/transactions";
 import { StyledButton } from "../../../styles/Button/style";
 import { StyledInput } from "../../../styles/Input/styles";
-
+interface Type {
+  id: number;
+  description: string;
+  nature: string;
+  signal: string;
+}
 function TransactionAddForm() {
-  const { addTransactions } = useTransactions();
+  const { addTransactions, getTransactions } = useTransactions();
   const { auth } = useAuth();
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
 
   const schema = yup.object().shape({
-    name: yup
+    title: yup
       .string()
-      .required("É requerido um nome para o contato!")
-      .min(5, "Digite seu nome com ao menos 05 caracteres!")
+      .required("É requerido um título para o arquivo CNAB!")
+      .min(5, "O título deve conter no mínimo 05 caracteres!")
       .matches(
         /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
-        "Nome Inválido! "
+        "Título Inválido, somente letras são permitidas! "
       ),
-    email: yup
-      .string()
-      .required("Digite seu Email!")
-      .email("Email não é válido"),
-    phone: yup
-      .string()
-      .required("Digite o seu telefone")
-      .min(11, "Número de telefone inválido"),
+    file: yup.object().shape({
+      file: yup.mixed().required("File is required"),
+    }),
   });
   const {
     register,
@@ -41,7 +38,7 @@ function TransactionAddForm() {
     resolver: yupResolver(schema),
   });
 
-  const addTransaction = ({ email, name, phone }: FieldValues) => {
+  const addTransaction = ({ title, file }: FieldValues) => {
     const errorsIsEmpty = () => {
       for (let key in errors) {
         if (errors.hasOwnProperty(key)) {
@@ -56,16 +53,14 @@ function TransactionAddForm() {
     if (errorsIsEmpty()) {
       Api.post(
         "/transaction",
-        { email, name, phone },
+        { title, file },
         {
           headers: { Authorization: `Bearer ${auth}` },
         }
       )
         .then((res) => {
           addTransactions(res.data);
-          setName("");
-          setPhone("");
-          setEmail("");
+          getTransactions();
         })
         .catch((err) => console.log(err));
     }
@@ -75,28 +70,14 @@ function TransactionAddForm() {
     <>
       <form onSubmit={handleSubmit(addTransaction)}>
         <StyledInput
-          type="text"
-          placeholder="Complete name"
+          type="file"
+          placeholder="Título do arquivo"
           required
-          {...register("name")}
-          onChange={(e) => setName(e.target.value)}
-          value={name}
+          {...register("title")}
         />
-        <StyledInput
-          type="tel"
-          placeholder="(xx)xxxxx-xxxx"
-          required
-          {...register("phone")}
-          onChange={(e) => setPhone(e.target.value)}
-          value={phone}
-        />
-        <StyledInput
-          type="email"
-          placeholder="email"
-          {...register("email")}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+
+        <StyledInput type="file" required {...register("file")} />
+
         <StyledButton type="submit">Save</StyledButton>
       </form>
     </>

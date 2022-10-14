@@ -30,7 +30,7 @@ function DashboardModal() {
               <StyledButton onClick={changeModal}>x</StyledButton>
             </section>
             <section className="modal_second_section">
-              <h2>Contact</h2>
+              <h2>Transaction</h2>
               <TransactionEditForm />
             </section>
           </StyledModal>

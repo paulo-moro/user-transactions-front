@@ -44,5 +44,8 @@ export const StyledModal = styled.div`
     input {
       width: 80%;
     }
+    span {
+      color: var(--white);
+    }
   }
 `;
