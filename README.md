@@ -1,29 +1,29 @@
 # Aplicação de contatos de usuário.
 
-Aplicação front end para a api de cadastro de usuários e contatos.
+Aplicação front end para a api de cadastro de usuários e transações.
 repo da api:
 
 ```
-https://github.com/paulo-moro/user-contacts-back-node
+https://github.com/paulo-moro/CNAB_python_back
 ```
+
+
 
 ## Iniciar aplicação
 
+Instalar as bibliotecas utilizadas:
+```
+yarn
+```
+Conferir o arquivo index.ts no src>api, verificar se o endereço para API, está endereçado para o endereço da API, a principio esse é o endereço cadastrado.
+```
+"http://localhost:8000/api"
+```
+Iniciar a aplicação:
 ```
 yarn start
 ```
 
-## Ligando à api
-
-Caso utilize o docker, a porta utilizada no localhost será a 8080, então é necessário modificar a porta no arquivo index.ts na API, caso seja utilizado localmente, está configurado a porta 8003.
-
-```
-Api>index.ts
-/* Caso seja executado localmente yarn dev */
-const Api = axios.create({ baseURL: "http://localhost:8003" }) ||
-/* Caso seja executado via docker */
-const Api = axios.create({ baseURL: "http://localhost:8080" });
-```
 
 ## Libs
 

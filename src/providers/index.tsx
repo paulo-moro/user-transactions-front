@@ -13,11 +13,11 @@ const Providers = ({ children }: Ichildrentype) => {
       <UserProvider>
         <TransactionsProvider>
           <TransactionTypeProvider>
-            <CnabFileProvider>
-              <ModalTypeProvider>
-                <ModalProvider>{children}</ModalProvider>
-              </ModalTypeProvider>
-            </CnabFileProvider>
+            <ModalTypeProvider>
+              <ModalProvider>
+                <CnabFileProvider>{children}</CnabFileProvider>
+              </ModalProvider>
+            </ModalTypeProvider>
           </TransactionTypeProvider>
         </TransactionsProvider>
       </UserProvider>

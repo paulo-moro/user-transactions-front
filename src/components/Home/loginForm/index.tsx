@@ -8,7 +8,7 @@ import { useAuth } from "../../../providers/authtoken";
 import { useModalType } from "../../../providers/modalType";
 import { StyledButton } from "../../../styles/Button/style";
 import { StyledInput } from "../../../styles/Input/styles";
-import { toast } from "react-toastify";
+
 function LoginForm() {
   const { changeModal } = useModal();
   const { changeAuth } = useAuth();
@@ -51,18 +51,18 @@ function LoginForm() {
       }
       return true;
     };
-    console.log(username, password);
+   
     if (errorsIsEmpty()) {
       Api.post("users/login/", { username, password })
         .then((res) => {
           localStorage.setItem("@authToken", res.data.token);
           changeAuth(res.data.token);
           Api.get("users/profile", {
-            headers: { Authorization: `Bearer ${res.data.token}` },
+            headers: { Authorization: `Token ${res.data.token}` },
           })
             .then((res) => {
               localStorage.setItem("@user", JSON.stringify(res.data));
-              toast.success("Login efetuado com sucesso");
+              
             })
             .catch((err) => console.error(err.response.data));
 

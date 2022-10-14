@@ -5,7 +5,6 @@ import Api from "../../../api";
 import { useModal } from "../../../providers/modal";
 import { StyledButton } from "../../../styles/Button/style";
 import { StyledInput } from "../../../styles/Input/styles";
-import { toast } from "react-toastify";
 
 function RegisterForm() {
   const { changeModal } = useModal();
@@ -64,17 +63,12 @@ function RegisterForm() {
       return true;
     };
     if (errorsIsEmpty()) {
-      console.log(data);
-      toast.success("AQui");
       Api.post("users/register/", data)
         .then((res) => {
           changeModal();
         })
         .catch((err) => {
           console.log(err.response.data);
-          toast.error(
-            "Erro ao criar a conta, tente novamente daqui a alguns minutos."
-          );
         });
     }
   };
