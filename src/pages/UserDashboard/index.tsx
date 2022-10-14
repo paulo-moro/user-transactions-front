@@ -1,24 +1,27 @@
 import { useEffect } from "react";
-import ContactList from "../../components/userdashboard/transactionList";
+import TransactionList from "../../components/userdashboard/transactionList";
 import DashboardModal from "../../components/userdashboard/dashboardModal";
 import { useAuth } from "../../providers/authtoken";
-import { useContacts } from "../../providers/transactions";
+import { useTransactions } from "../../providers/transactions";
 import { useUser } from "../../providers/user";
 import { StyledDashBoard } from "./styles";
+import { useCnabFile } from "../../providers/CnabFile";
 
 function UserDashoardPage() {
   const { getAuth } = useAuth();
-  const { getContacts } = useContacts();
+  const { getTransactions } = useTransactions();
   const { getUser } = useUser();
+  const { getCnabFile } = useCnabFile();
   useEffect(() => {
     getAuth();
     getUser();
-    getContacts();
+    getTransactions();
+    // getCnabFile();
   }, []);
 
   return (
     <StyledDashBoard>
-      <ContactList />
+      <TransactionList />
 
       <section className="side-screen">
         <DashboardModal />

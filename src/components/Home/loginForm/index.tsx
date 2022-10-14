@@ -8,15 +8,20 @@ import { useAuth } from "../../../providers/authtoken";
 import { useModalType } from "../../../providers/modalType";
 import { StyledButton } from "../../../styles/Button/style";
 import { StyledInput } from "../../../styles/Input/styles";
+import { toast } from "react-toastify";
 function LoginForm() {
   const { changeModal } = useModal();
   const { changeAuth } = useAuth();
   const { changeModalType } = useModalType();
   const schema = yup.object().shape({
-    email: yup
+    username: yup
       .string()
-      .required("Digite seu Email!")
-      .email("Email não é válido"),
+      .min(5, "O nome de usuário deve conter no mínimo 5 caracteres")
+      .matches(
+        /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
+        "Nome Inválido! "
+      ),
+
     password: yup
       .string()
       .required("Campo obrigatório")
@@ -35,7 +40,7 @@ function LoginForm() {
   });
   const history = useHistory();
 
-  const handleLogin = ({ email, password }: FieldValues) => {
+  const handleLogin = ({ username, password }: FieldValues) => {
     const errorsIsEmpty = () => {
       for (let key in errors) {
         if (errors.hasOwnProperty(key)) {
@@ -46,23 +51,24 @@ function LoginForm() {
       }
       return true;
     };
-
+    console.log(username, password);
     if (errorsIsEmpty()) {
-      Api.post("users/login", { email, password })
+      Api.post("users/login/", { username, password })
         .then((res) => {
           localStorage.setItem("@authToken", res.data.token);
           changeAuth(res.data.token);
-          Api.get("users/", {
+          Api.get("users/profile", {
             headers: { Authorization: `Bearer ${res.data.token}` },
           })
             .then((res) => {
               localStorage.setItem("@user", JSON.stringify(res.data));
+              toast.success("Login efetuado com sucesso");
             })
-            .catch((err) => console.error(err));
+            .catch((err) => console.error(err.response.data));
 
           history.push("/dashboard");
         })
-        .catch((err) => console.error(err));
+        .catch((err) => console.error(err.response.data));
     }
   };
 
@@ -70,8 +76,12 @@ function LoginForm() {
     <>
       <form onSubmit={handleSubmit(handleLogin)}>
         <h2>Login</h2>
-        <StyledInput type="email" placeholder="E-mail" {...register("email")} />
-        {errors.email && <span>{String(errors.email?.message)}</span>}
+        <StyledInput
+          type="username"
+          placeholder="Username"
+          {...register("username")}
+        />
+        {errors.username && <span>{String(errors.username?.message)}</span>}
         <StyledInput
           type="password"
           placeholder="Password"

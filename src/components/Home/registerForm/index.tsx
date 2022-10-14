@@ -1,17 +1,19 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
+import Api from "../../../api";
 import { useModal } from "../../../providers/modal";
 import { StyledButton } from "../../../styles/Button/style";
 import { StyledInput } from "../../../styles/Input/styles";
+import { toast } from "react-toastify";
 
 function RegisterForm() {
   const { changeModal } = useModal();
   const schema = yup.object().shape({
-    name: yup
+    username: yup
       .string()
-      .required("Digite seu nome completo!")
-      .min(8, "Digite seu nome com ao menos 08 caracteres!")
+      .required("Campo obrigatório")
+      .min(5, "O nome de usuário deve conter no mínimo 5 caracteres")
       .matches(
         /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
         "Nome Inválido! "
@@ -20,10 +22,6 @@ function RegisterForm() {
       .string()
       .required("Digite seu Email!")
       .email("Email não é válido"),
-    phone: yup
-      .string()
-      .required("Digite o seu telefone")
-      .min(11, "Número de telefone inválido"),
     password: yup
       .string()
       .required("Campo obrigatório")
@@ -32,6 +30,15 @@ function RegisterForm() {
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{4,}$/,
         "Está faltando um caractere especial, ou um número ou uma letra maiuscula ou minuscula"
       ),
+
+    first_name: yup
+      .string()
+      .required("Campo obrigatório")
+      .min(3, "Primeiro nome deve conter no mínimo 3 caracteres"),
+    last_name: yup
+      .string()
+      .required("Campo obrigatório")
+      .min(4, "Sobrenome deve haver no minimo 4 caracteres"),
     confirmPassword: yup
       .string()
       .required("Campo obrigatório")
@@ -54,22 +61,46 @@ function RegisterForm() {
           return true;
         }
       }
+      return true;
     };
-
     if (errorsIsEmpty()) {
-      changeModal();
+      console.log(data);
+      toast.success("AQui");
+      Api.post("users/register/", data)
+        .then((res) => {
+          changeModal();
+        })
+        .catch((err) => {
+          console.log(err.response.data);
+          toast.error(
+            "Erro ao criar a conta, tente novamente daqui a alguns minutos."
+          );
+        });
     }
   };
-
   return (
     <>
       <form onSubmit={handleSubmit(handleRegister)}>
-        <StyledInput type="text" placeholder="Name" {...register("name")} />
-        {errors.name && <span>{String(errors.name?.message)}</span>}
+        <StyledInput
+          type="text"
+          placeholder="Username"
+          {...register("username")}
+        />
+        {errors.username && <span>{String(errors.username?.message)}</span>}
         <StyledInput type="text" placeholder="E-mail" {...register("email")} />
         {errors.email && <span>{String(errors.email?.message)}</span>}
-        <StyledInput type="text" placeholder="Phone" {...register("phone")} />
-        {errors.phone && <span>{String(errors.phone?.message)}</span>}
+        <StyledInput
+          type="text"
+          placeholder="First name"
+          {...register("first_name")}
+        />
+        {errors.first_name && <span>{String(errors.first_name?.message)}</span>}
+        <StyledInput
+          type="text"
+          placeholder="Last Name"
+          {...register("last_name")}
+        />
+        {errors.last_name && <span>{String(errors.last_name?.message)}</span>}
         <StyledInput
           type="password"
           placeholder="Password"
@@ -79,7 +110,7 @@ function RegisterForm() {
         <StyledInput
           type="password"
           placeholder="Confirm password"
-          {...register("confirmpassword")}
+          {...register("confirmPassword")}
         />
         {errors.confirmPassword && (
           <span>{String(errors.confirmPassword?.message)}</span>

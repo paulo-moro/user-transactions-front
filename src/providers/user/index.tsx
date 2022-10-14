@@ -5,9 +5,13 @@ import { useAuth } from "../authtoken";
 
 interface User {
   id: string;
-  name: string;
+  last_login?: Date;
+  is_superuser: boolean;
+  date_joined: Date;
+  first_name: string;
+  last_name: string;
+  username: string;
   email: string;
-  phone: string;
 }
 
 interface UserProviderData {
@@ -21,12 +25,7 @@ export const userContext = createContext<UserProviderData>(
 );
 
 export const UserProvider = ({ children }: Ichildrentype) => {
-  const [user, setUser] = useState<User>({
-    id: "",
-    name: "",
-    email: "",
-    phone: "",
-  });
+  const [user, setUser] = useState<User>({} as User);
   const { auth } = useAuth();
   useEffect(() => {
     auth && setUser(JSON.parse(localStorage.getItem("@user")!));
@@ -34,7 +33,7 @@ export const UserProvider = ({ children }: Ichildrentype) => {
 
   const changeUser = (newUser: User) => setUser({ ...user, ...newUser });
   const getUser = () => {
-    Api.get("/users", { headers: { Authorization: `Bearer ${auth}` } }).then(
+    Api.get("/users/profile ", { headers: { Authorization: `Bearer ${auth}` } }).then(
       (res) => {
         changeUser(res.data);
       }

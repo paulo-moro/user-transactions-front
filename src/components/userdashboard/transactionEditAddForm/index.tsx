@@ -3,25 +3,15 @@ import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useTransactions } from "../../../providers/transactions";
-import { useEditTransaction } from "../../../providers/edittransaction";
 import { useModal } from "../../../providers/modal";
 import { useModalType } from "../../../providers/modalType";
 import { StyledButton } from "../../../styles/Button/style";
 
 function TransactionEditForm() {
-  const { updateTransactions, deleteTransactions } = useTransactions();
+  const { updateTransactions, deleteTransactions, transaction } =
+    useTransactions();
   const { changeModal } = useModal();
-  const { transaction } = useEditTransaction();
   const { changeModalType } = useModalType();
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
-
-  useEffect(() => {
-    setName(transaction.name);
-    setPhone(transaction.phone);
-    setEmail(transaction.email);
-  }, []);
 
   const schema = yup.object().shape({
     name: yup
@@ -62,37 +52,22 @@ function TransactionEditForm() {
     }
   };
 
-  const deleteTransaction = (transactionId: string) => {
+  const deleteTransaction = (transactionId: number) => {
     deleteTransactions(transactionId);
     changeModalType("");
   };
 
   return (
     <form onSubmit={handleSubmit(updateTransaction)}>
-      <input
-        type="text"
-        placeholder="Complete name"
-        required
-        {...register("name")}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        type="tel"
-        placeholder="(xx)xxxxx-xxxx"
-        required
-        {...register("phone")}
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-      />
-      <input
-        type="email"
-        placeholder="email"
-        required
-        {...register("email")}
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <input value={transaction.type.description} disabled />
+      <input value={transaction.type.nature} disabled />
+      <input value={transaction.shop_name} disabled />
+      <input value={transaction.shop_rep} disabled />
+      <input value={transaction.amount} disabled />
+      <input value={transaction.CPF} disabled />
+      <input value={transaction.card} disabled />
+      <input value={transaction.transaction_date} disabled />
+      <input value={transaction.transaction_time} disabled />
       <StyledButton
         type="button"
         onClick={() => deleteTransaction(transaction!.id)}
