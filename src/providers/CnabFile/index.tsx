@@ -1,10 +1,13 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
+
 import Api from "../../api";
 import { Ichildrentype } from "../../interface";
 import { useAuth } from "../authtoken";
+import { useModal } from "../modal";
+import { useTransactions } from "../transactions";
 
 interface CNABFile {
-  id: string;
+  id: number;
   title: string;
   file: string;
 }
@@ -14,9 +17,10 @@ interface CNABProviderData {
   changeCnabFile: (newFile: CNABFile) => void;
   cnabList: CNABFile[];
   changeCnabList: (newFile: CNABFile) => void;
-  addCnabFile: ({ title, file }: CNABFile) => void;
+  addCnabFile: (requestBody: FormData) => void;
   transcriptFile: (cnab_Id: number) => void;
   getCnabFile: () => void;
+  deleteCnabFile: (cnab_id: number) => void;
 }
 
 export const CnabFileContext = createContext<CNABProviderData>(
@@ -26,8 +30,13 @@ export const CnabFileContext = createContext<CNABProviderData>(
 export const CnabFileProvider = ({ children }: Ichildrentype) => {
   const [cnabFile, setCnabFile] = useState<CNABFile>({} as CNABFile);
   const [cnabList, setCnabList] = useState<CNABFile[]>([]);
-  const { auth } = useAuth();
+  const { auth, getAuth } = useAuth();
+  const { changeModal } = useModal();
+  const { getTransactions } = useTransactions();
 
+  useEffect(() => {
+    getAuth();
+  }, []);
   const changeCnabFile = (newFile: CNABFile) => {
     setCnabFile({ ...cnabFile, ...newFile });
   };
@@ -41,24 +50,41 @@ export const CnabFileProvider = ({ children }: Ichildrentype) => {
       .then((res) => setCnabList(res.data))
       .catch((err) => console.log(err));
   };
-  const addCnabFile = ({ file, title }: CNABFile) => {
-    Api.post(
-      "transaction/upload",
-      { title, file },
-      {
-        headers: { Authorization: `Bearer ${auth}` },
-      }
-    )
+  const addCnabFile = (requestBody: FormData) => {
+    const headers = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    Api.post("transactions/upload/", requestBody, headers)
       .then((res) => {
         getCnabFile();
+        changeModal();
       })
       .catch((err) => console.log(err));
   };
 
+  const deleteCnabFile = (cnab_id: number) => {
+    Api.delete(`transactions/file/${cnab_id}`, {
+      headers: { Authorization: `Token ${auth}` },
+    })
+      .then((res) => {
+        getCnabFile();
+   
+      })
+      .catch((err) => console.error("Deletion failed, try it later."));
+  };
+
   const transcriptFile = (cnab_id: number) => {
-    Api.post(`transaction/file/${cnab_id}/`, {
-      headers: { Authorization: `Bearer ${auth}` },
-    });
+    Api.post(`transaction/file/${cnab_id}/`, null, {
+      headers: { Authorization: `Token ${auth}` },
+    })
+      .then(() => {
+        getTransactions();
+        getCnabFile();
+      })
+      .catch((err) => console.error(err));
   };
 
   return (
@@ -71,6 +97,7 @@ export const CnabFileProvider = ({ children }: Ichildrentype) => {
         addCnabFile,
         transcriptFile,
         getCnabFile,
+        deleteCnabFile,
       }}
     >
       {children}

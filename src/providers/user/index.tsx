@@ -27,17 +27,19 @@ export const userContext = createContext<UserProviderData>(
 export const UserProvider = ({ children }: Ichildrentype) => {
   const [user, setUser] = useState<User>({} as User);
   const { auth } = useAuth();
+
   useEffect(() => {
     auth && setUser(JSON.parse(localStorage.getItem("@user")!));
   }, []);
 
   const changeUser = (newUser: User) => setUser({ ...user, ...newUser });
   const getUser = () => {
-    Api.get("/users/profile ", { headers: { Authorization: `Bearer ${auth}` } }).then(
-      (res) => {
-        changeUser(res.data);
-      }
-    );
+    Api.get("/users/profile ", {
+      headers: { Authorization: `Token ${auth}` },
+    }).then((res) => {
+      changeUser(res.data);
+      localStorage.setItem("@user", JSON.stringify(res.data));
+    });
   };
   return (
     <userContext.Provider value={{ changeUser, user, getUser }}>

@@ -1,12 +1,15 @@
 import { yupResolver } from "@hookform/resolvers/yup";
+import { request } from "https";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Api from "../../../api";
 import { useAuth } from "../../../providers/authtoken";
+import { useCnabFile } from "../../../providers/CnabFile";
 import { useTransactions } from "../../../providers/transactions";
 import { StyledButton } from "../../../styles/Button/style";
 import { StyledInput } from "../../../styles/Input/styles";
+import Dropzone from "../../dropzone";
 interface Type {
   id: number;
   description: string;
@@ -16,6 +19,8 @@ interface Type {
 function TransactionAddForm() {
   const { addTransactions, getTransactions } = useTransactions();
   const { auth } = useAuth();
+  const { addCnabFile } = useCnabFile();
+  const [file, setFile] = useState<File>({} as File);
 
   const schema = yup.object().shape({
     title: yup
@@ -26,9 +31,6 @@ function TransactionAddForm() {
         /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/,
         "Título Inválido, somente letras são permitidas! "
       ),
-    file: yup.object().shape({
-      file: yup.mixed().required("File is required"),
-    }),
   });
   const {
     register,
@@ -38,7 +40,7 @@ function TransactionAddForm() {
     resolver: yupResolver(schema),
   });
 
-  const addTransaction = ({ title, file }: FieldValues) => {
+  const handleUpload = ({ title }: FieldValues) => {
     const errorsIsEmpty = () => {
       for (let key in errors) {
         if (errors.hasOwnProperty(key)) {
@@ -50,35 +52,29 @@ function TransactionAddForm() {
       return true;
     };
 
-    if (errorsIsEmpty()) {
-      Api.post(
-        "/transaction",
-        { title, file },
-        {
-          headers: { Authorization: `Bearer ${auth}` },
-        }
-      )
-        .then((res) => {
-          addTransactions(res.data);
-          getTransactions();
-        })
-        .catch((err) => console.log(err));
+    if (errorsIsEmpty() && file) {
+      const requestBody = new FormData();
+
+      requestBody.append("title", title);
+
+      requestBody.append("file", file);
+
+      addCnabFile(requestBody);
     }
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit(addTransaction)}>
+      <form onSubmit={handleSubmit(handleUpload)}>
         <StyledInput
-          type="file"
+          type="text"
           placeholder="Título do arquivo"
           required
           {...register("title")}
         />
+        <Dropzone onFileUploaded={setFile} />
 
-        <StyledInput type="file" required {...register("file")} />
-
-        <StyledButton type="submit">Save</StyledButton>
+        <StyledButton type="submit">Add file</StyledButton>
       </form>
     </>
   );

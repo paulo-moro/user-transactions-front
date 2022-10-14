@@ -36,7 +36,7 @@ export const TransactionsProvider = ({ children }: Ichildrentype) => {
     setTransactions([transaction, ...transactions]);
 
   const getTransactions = () => {
-    Api.get(`transactions/`, { headers: { Authorization: `Bearer ${auth}` } })
+    Api.get(`transactions/`, { headers: { Authorization: `Token ${auth}` } })
       .then((res) => {
         setTransactions(res.data);
       })
@@ -45,7 +45,7 @@ export const TransactionsProvider = ({ children }: Ichildrentype) => {
 
   const updateTransactions = (id: number, newData: ItransactionParcial) => {
     Api.patch(`transaction/${id}`, newData, {
-      headers: { Authorization: `Bearer ${auth}` },
+      headers: { Authorization: `Token ${auth}` },
     }).then((res) => {
       getTransactions();
     });
@@ -53,7 +53,7 @@ export const TransactionsProvider = ({ children }: Ichildrentype) => {
 
   const deleteTransactions = (id: number) => {
     Api.delete(`transaction/${id}`, {
-      headers: { Authorization: `Bearer ${auth}` },
+      headers: { Authorization: `Token ${auth}` },
     }).then((res) => {
       getTransactions();
     });

@@ -16,7 +16,7 @@ function UserDashoardPage() {
     getAuth();
     getUser();
     getTransactions();
-    // getCnabFile();
+    getCnabFile();
   }, []);
 
   return (
